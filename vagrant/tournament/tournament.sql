@@ -7,3 +7,15 @@
 -- these lines here.
 
 
+CREATE TABLE players ( name TEXT,
+                     id SERIAL );
+
+CREATE TABLE matches ( winner INTEGER,
+                     loser INTEGER,
+                     id SERIAL );
+
+CREATE VIEW wins AS
+SELECT players.id, count(matches.winner)
+FROM players LEFT JOIN matches
+ON players.id = matches.winner
+GROUP BY players.id;
