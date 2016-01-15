@@ -88,15 +88,20 @@ def playerStandings():
     return ret
 
 
-def reportMatch(winner, loser):
+def reportMatch(winner, loser, is_draw=0):
     """Records the outcome of a single match between two players.
 
     Args:
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
+      is_draw: If the value is 1, the game is draw.
     """
     conn, cur = connect()
-    cur.execute("INSERT INTO matches VALUES (%s, %s);", (winner, loser))
+    if is_draw:
+        cur.execute("INSERT INTO matches draw VALUES (%s);", (winner,))
+        cur.execute("INSERT INTO matches draw VALUES (%s);", (loser,))
+    else:
+        cur.execute("INSERT INTO matches VALUES (%s, %s);", (winner, loser))
     conn.commit()
     disconnect(conn, cur)
  
@@ -117,7 +122,10 @@ def swissPairings():
         name2: the second player's name
     """
     win_list = playerStandings()
+    win_list_size = len(win_list)
     ret = []
-    for i in range(len(win_list) / 2):
+    for i in range(win_list_size / 2):
         ret.append((win_list[i*2][0], win_list[i*2][1], win_list[i*2+1][0], win_list[i*2+1][1]))
+    if win_list_size % 2:       # for an odd number of players
+        reportMatch(win_list[win_list_size][0], 0)
     return ret

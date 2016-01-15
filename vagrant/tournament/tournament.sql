@@ -8,11 +8,12 @@
 
 
 CREATE TABLE players ( name TEXT,
-                     id SERIAL );
+                     id SERIAL PRIMARY KEY);
 
-CREATE TABLE matches ( winner INTEGER,
-                     loser INTEGER,
-                     id SERIAL );
+CREATE TABLE matches ( winner INTEGER REFERENCES players(id),
+                     loser INTEGER REFERENCES players(id),
+                     draw INTEGER REFERENCES players(id),
+                     id SERIAL PRIMARY KEY);
 
 CREATE VIEW wins AS
 SELECT players.id, count(matches.winner)
